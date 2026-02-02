@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>To-Do List with Checkbox</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f3e8ff; /* light purple */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .todo-container {
+        background: white;
+        width: 380px;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(128, 0, 128, 0.2);
+    }
+
+    h2 {
+        text-align: center;
+        color: #6a0dad;
+        margin-bottom: 20px;
+    }
+
+    .input-section {
+        display: flex;
+        gap: 10px;
+    }
+
+    input[type="text"] {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #d1b3ff;
+        border-radius: 6px;
+        outline: none;
+    }
+
+    button {
+        padding: 10px 14px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background-color: #9b5de5;
+        color: white;
+    }
+
+    button:hover {
+        background-color: #7b3fe4;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+    }
+
+    li {
+        background: #f8f0ff;
+        padding: 8px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .task-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .task-left.completed span {
+        color: gray;
+    }
+
+    .delete-btn {
+        background-color: #ff4d6d;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="todo-container">
+    <h2>📝 To-Do List</h2>
+
+    <div class="input-section">
+        <input type="text" id="taskInput" placeholder="Enter a new task">
+        <button onclick="addTask()">Add</button>
+    </div>
+
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+    const taskInput = document.getElementById("taskInput");
+    const taskList = document.getElementById("taskList");
+
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function saveTasks() {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+        taskList.innerHTML = "";
+
+        tasks.forEach((task, index) => {
+            const li = document.createElement("li");
+
+            const taskLeft = document.createElement("div");
+            taskLeft.className = "task-left";
+            if (task.completed) taskLeft.classList.add("completed");
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = task.completed;
+            checkbox.onchange = () => toggleTask(index);
+
+            const span = document.createElement("span");
+            span.textContent = task.text;
+
+            taskLeft.appendChild(checkbox);
+            taskLeft.appendChild(span);
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+            deleteBtn.className = "delete-btn";
+            deleteBtn.onclick = () => deleteTask(index);
+
+            li.appendChild(taskLeft);
+            li.appendChild(deleteBtn);
+
+            taskList.appendChild(li);
+        });
+    }
+
+    function addTask() {
+        const text = taskInput.value.trim();
+        if (text === "") return;
+
+        tasks.push({ text: text, completed: false });
+        taskInput.value = "";
+        saveTasks();
+        renderTasks();
+    }
+
+    function toggleTask(index) {
+        tasks[index].completed = !tasks[index].completed;
+        saveTasks();
+        renderTasks();
+    }
+
+    function deleteTask(index) {
+        tasks.splice(index, 1);
+        saveTasks();
+        renderTasks();
+    }
+
+    renderTasks();
+</script>
+
+</body>
+</html>
+
+
+
+
